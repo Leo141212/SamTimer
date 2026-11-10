@@ -41,6 +41,15 @@
     <string name="auto_title">재부팅 후 자동 루트</string>
     <string name="auto_desc">부팅 시 Shizuku 대기 → 자동 실행 · 실패 시 자동 해제</string>
 
+    <!-- 안전 부팅: KSU 모듈 + 부팅 스크립트 차단 (부팅 루프 복구) -->
+    <string name="safe_title">안전 부팅 (모듈 차단)</string>
+    <string name="safe_desc">다음 실행에 모든 KSU 모듈과 service.d·post-fs-data.d 스크립트를 비활성화 — 부팅 루프 모듈 복구용 · 끄면 그 다음 실행에 복원</string>
+
+    <!-- 부팅 직후 안정화 대기 -->
+    <string name="status_settle_fmt">부팅 안정화 대기 — %d초</string>
+    <string name="log_settle_wait">부팅 직후는 실패율이 높아 %d초 대기 후 실행합니다</string>
+    <string name="log_settle_done">안정화 대기 완료 — 실행 시작</string>
+
     <!-- Log -->
     <string name="log_label">LOG</string>
     <string name="log_run_started">run started</string>

@@ -41,6 +41,15 @@
     <string name="auto_title">Auto-root after reboot</string>
     <string name="auto_desc">Waits for Shizuku on boot, then runs automatically · disables itself on failure</string>
 
+    <!-- Safe boot: block KSU modules + boot script dirs (breach recovery) -->
+    <string name="safe_title">Safe boot (block modules)</string>
+    <string name="safe_desc">Next run disables every KSU module and parks service.d / post-fs-data.d — for a module that boot-loops the phone · turn off to restore on the run after</string>
+
+    <!-- Post-boot settle hold -->
+    <string name="status_settle_fmt">Waiting for the system to settle — %ds</string>
+    <string name="log_settle_wait">boot settle: holding the run for %ds (early runs fail more often)</string>
+    <string name="log_settle_done">boot settled — starting</string>
+
     <!-- Log -->
     <string name="log_label">LOG</string>
     <string name="log_run_started">run started</string>

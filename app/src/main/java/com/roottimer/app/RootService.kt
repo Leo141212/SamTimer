@@ -120,7 +120,7 @@ class RootService(private val context: Context) : IRootService.Stub() {
             log(callback, "warn: ksud staging failed (${e.message}); KSU load will fail")
         }
 
-        // 1b. UMH helper: the same payload binary under the path the fake
+        // 1c. UMH helper: the same payload binary under the path the fake
         // usermodehelper execs (ROOT_UMH_PATH); --umh runs setksu_main.
         try {
             val uhexec = File(workDir, "uhexec")

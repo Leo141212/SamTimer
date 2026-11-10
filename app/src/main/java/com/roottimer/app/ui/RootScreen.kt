@@ -88,6 +88,8 @@ fun RootScreen(
     logs: List<String>,
     onRun: () -> Unit,
     onAutoToggle: (Boolean) -> Unit,
+    safeMode: Boolean,
+    onSafeToggle: (Boolean) -> Unit,
 ) {
     Surface(color = Bg, modifier = Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
@@ -255,6 +257,41 @@ fun RootScreen(
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = OnAccent,
                             checkedTrackColor = Accent,
+                            uncheckedThumbColor = TextSecondary,
+                            uncheckedTrackColor = Surface2
+                        )
+                    )
+                }
+
+                HorizontalDivider(
+                    Modifier.padding(horizontal = 18.dp),
+                    color = Surface2
+                )
+
+                // ── Safe-boot switch: block KSU modules + script dirs ──
+                Row(
+                    Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.safe_title),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextPrimary
+                        )
+                        Text(
+                            stringResource(R.string.safe_desc),
+                            fontSize = 11.sp,
+                            color = TextSecondary
+                        )
+                    }
+                    Switch(
+                        checked = safeMode,
+                        onCheckedChange = onSafeToggle,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = OnAccent,
+                            checkedTrackColor = Warn,
                             uncheckedThumbColor = TextSecondary,
                             uncheckedTrackColor = Surface2
                         )

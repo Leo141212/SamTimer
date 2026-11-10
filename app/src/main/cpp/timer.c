@@ -1218,6 +1218,52 @@ static void write_ksu_script(void)
         /* The parent only frees the spray pool (the forged cred lives in
          * one of those pages) when this marker reads "done". */
         "echo pending > /data/local/tmp/samtimer/cleanup.ok\n"
+        /* Safe-mode toggle: read the app's SharedPreferences XML directly
+         * (DirtyFrag pattern) instead of a relay marker the app stages --
+         * one source of truth, nothing to stage or race, the state is live
+         * at stage time.  The pref is absent until the user first toggles
+         * the switch, so untouched installs get no side effects; value
+         * true blocks (disable flag in every module dir + parked script
+         * dirs), an existing-but-false pref restores.  A bad module or a
+         * service.d script boot-loops the device, so this runs first, in
+         * the forged root (init) context, even before the late-load -- if
+         * the load fails anyway the markers still land and the next boot
+         * is clean.  The kernelsu module dir itself is never disabled --
+         * the chain re-establishes root every boot via late-load and does
+         * not depend on the dir.  (CE prefs: readable once the user is
+         * unlocked, which the 3-minute settle window makes the norm.) */
+        "PF=/data/user/0/com.roottimer.app/shared_prefs/roottimer_prefs.xml\n"
+        "if [ -r \"$PF\" ] && grep -q 'safe_mode' \"$PF\" 2>/dev/null; then\n"
+        "  if grep -q '<boolean name=\"safe_mode\" value=\"true\"' \"$PF\"; then\n"
+        "    if [ -d /data/adb/modules ]; then\n"
+        "      for d in /data/adb/modules/*/; do\n"
+        "        id=${d%/}; id=${id##*/}\n"
+        "        [ \"$id\" = kernelsu ] && continue\n"
+        "        touch \"${d}disable\"\n"
+        "        echo \"[safe] module disabled: $id\"\n"
+        "      done\n"
+        "    fi\n"
+        "    for s in post-fs-data.d service.d; do\n"
+        "      [ -d \"/data/adb/$s\" ] && mv \"/data/adb/$s\" \"/data/adb/$s.disabled-by-samtimer\" && echo \"[safe] $s parked\"\n"
+        "    done\n"
+        "    echo '[safe] modules + script dirs blocked'\n"
+        "  elif grep -q '<boolean name=\"safe_mode\"' \"$PF\"; then\n"
+        "    for d in /data/adb/modules/*/; do\n"
+        "      rm -f \"${d}disable\"\n"
+        "    done\n"
+        "    for s in post-fs-data.d service.d; do\n"
+        "      [ -d \"/data/adb/$s.disabled-by-samtimer\" ] || continue\n"
+        "      if [ -d \"/data/adb/$s\" ]; then\n"
+        "        cp -r \"/data/adb/$s.disabled-by-samtimer/.\" \"/data/adb/$s/\"\n"
+        "        rm -rf \"/data/adb/$s.disabled-by-samtimer\"\n"
+        "      else\n"
+        "        mv \"/data/adb/$s.disabled-by-samtimer\" \"/data/adb/$s\"\n"
+        "      fi\n"
+        "      echo \"[safe] $s restored\"\n"
+        "    done\n"
+        "    echo '[safe] modules + script dirs restored'\n"
+        "  fi\n"
+        "fi\n"
         "KSUD=/data/local/tmp/samtimer/ksud\n"
         "[ -x \"$KSUD\" ] || KSUD=/data/local/tmp/ksud\n"
         "if [ ! -x \"$KSUD\" ]; then echo '[ksu] ksud missing'; exit 1; fi\n"
